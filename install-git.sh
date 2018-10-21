@@ -1,4 +1,8 @@
 #!/bin/bash
+#fun:		Change the repo and instal git
+#auth:		Jerry
+#date:		2018.10.21
+#version:	1.0
 #aliyun源
 wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
 #epel源

@@ -10,6 +10,7 @@ chmod -R 755 /etc/zabbix/web
 chown -R apache.apache /etc/zabbix/web
 echo "ServerName 127.0.0.1:80">>/etc/httpd/conf/httpd.conf
 sed -i 's#;always_populate_raw_post_data = -1#always_populate_raw_post_data = -1#g' /etc/php.ini
+sed 's#Listen 80#Listen 1999#g' /etc/httpd/conf/httpd.conf
 /etc/init.d/mysqld start
 passwd=`awk '/password/{print $NF}' /var/log/mysqld.log | awk 'NR==1{print $0}'`
 mysqladmin -uroot -p"$passwd" password "Oldboy@123"

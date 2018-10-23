@@ -10,3 +10,11 @@ chmod -R 755 /etc/zabbix/web
 chown -R apache.apache /etc/zabbix/web
 echo "ServerName 127.0.0.1:80">>/etc/httpd/conf/httpd.conf
 sed -i 's#;always_populate_raw_post_data = -1#always_populate_raw_post_data = -1#g' /etc/php.ini
+/etc/init.d/mysqld start
+passwd=`awk '/password/{print $NF}' /var/log/mysqld.log | awk 'NR==1{print $0}'`
+mysqladmin -uroot -p"$passwd" password "Oldboy@123"
+mysql -uroot -p'Oldboy@123' -e 'create database zabbix character set utf8 collate utf8_bin;'
+mysql -uroot -p'Oldboy@123' -e "grant all privileges on zabbix.* to 'zabbix'@'localhost' identified by 'zabbix'"
+zcat /usr/share/doc/zabbix-server-mysql-3.2.11/create.sql.gz | mysql -uzabbix -pzabbix zabbix
+/etc/init.d/httpd start
+/etc/init.d/zabbix-server start

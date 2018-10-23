@@ -14,7 +14,7 @@ sed -i 's#;always_populate_raw_post_data = -1#always_populate_raw_post_data = -1
 passwd=`awk '/password/{print $NF}' /var/log/mysqld.log | awk 'NR==1{print $0}'`
 mysqladmin -uroot -p"$passwd" password "Oldboy@123"
 mysql -uroot -p'Oldboy@123' -e 'create database zabbix character set utf8 collate utf8_bin;'
-mysql -uroot -p'Oldboy@123' -e "grant all privileges on zabbix.* to 'zabbix'@'localhost' identified by 'zabbix'"
-zcat /usr/share/doc/zabbix-server-mysql-3.2.11/create.sql.gz | mysql -uzabbix -pzabbix zabbix
+mysql -uroot -p'Oldboy@123' -e "grant all privileges on zabbix.* to 'zabbix'@'localhost' identified by 'Zabbix@123'"
+zcat /usr/share/doc/zabbix-server-mysql-3.4.14/create.sql.gz | mysql -uzabbix -p'Zabbix@123' zabbix
 /etc/init.d/httpd start
 /etc/init.d/zabbix-server start

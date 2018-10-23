@@ -1,5 +1,5 @@
 #!/bin/bash
-tar zxf /tmp/jdk-8u181-linux-x64.tar.gz
+tar zxf /tmp/jdk-8u181-linux-x64.tar.gz -C /tmp/jdk1.8.0_181
 mkdir /application
 mv /tmp/jdk1.8.0_181/ /application/
 ln -sf /application/jdk1.8.0_181/ /application/jdk

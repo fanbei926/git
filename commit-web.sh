@@ -4,7 +4,7 @@ filename=`date +%F`_`echo $RANDOM | md5sum | cut -c 1-5`
 host=10.0.0.16
 
 yum install -y sshpass
-ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa
+#ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa
 sshpass -p123456 ssh-copy-id -i /root/.ssh/id_rsa.pub root@${host} "-o StrictHostKeyChecking=no"
 
 cd /var/lib/jenkins/workspace/${project_name}/

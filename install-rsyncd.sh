@@ -67,4 +67,5 @@ then
 	echo `ps -ef | egrep "\brsync --daemon\b"`
 	kill `ps -ef | egrep "\brsync --daemon\b" | awk '{print $2}'`
 fi
+sleep 5
 rsync --daemon

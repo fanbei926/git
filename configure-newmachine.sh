@@ -28,6 +28,8 @@ echo "------------Configure system time & update it------------"
 echo "Update system time by Jerry at 2018-10-25" >> /var/spool/cron/root
 echo "*/5 * * * * /usr/sbin/ntpdate ntp1.aliyun.com > /dev/null 2>&1" >> /var/spool/cron/root
 echo "TZ='Asia/Shanghai'; export TZ" >> /etc/profile
+echo "alias grep='grep --color=auto'" >> /etc/profile
+echo "alias egrep='egrep --color=auto'" >> /etc/profile
 source /etc/profile
 sed -i.ori 's#ZONE="America/New_York"#ZONE="Asia/Shanghai"#g' /etc/sysconfig/clock
 rm -fr /etc/localtime

@@ -7,25 +7,28 @@ ln -sf /application/nginx-1.12.2 /application/nginx
 ln -sf /application/nginx/sbin/nginx /usr/sbin/nginx
 cat >/application/nginx/conf/nginx.conf<<'EOF'
 worker_processes  1;
-    events {
-        worker_connections  1024;
-    }
-    http {
-        include       mime.types;
-        default_type  application/octet-stream;
-        sendfile        on;
-        keepalive_timeout  65;
-        server {
-            listen       80;
-            server_name  www.etiantian.org;
-            location / {
-                root   html/www;
-                index  index.html index.htm;
-            }
-        }
-    }
+events {
+    worker_connections  1024;
+}
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    sendfile        on;
+    keepalive_timeout  65;
+    
+    include extra/blog.conf;
+}
 EOF
+
 mkdir -p /application/nginx/conf/extra /application/nginx/html/blog
+server {
+      listen       80;
+      server_name  localhost;
+      location / {
+          root   html/blog;
+          index  index.html index.htm;
+      }
+ }
 wget https://wordpress.org/latest.tar.gz
 tar zxf /tmp/latest.tar.gz -C /application/nginx/html/blog/
 wget http://jp2.php.net/distributions/php-5.6.38.tar.gz
@@ -40,3 +43,5 @@ cp /application/mysql/support-files/mysql.server /etc/init.d/mysqld
 sed -i.ori 's#/usr/local#/application#g' /application/mysql/bin/mysqld_safe /etc/init.d/mysqld
 ln -sf /application/mysql/bin/* /usr/sbin/
 mysqladmin -uroot password 'oldboy123'
+mysql -uroot -poldboy123 -e "create database worepress;"
+mysql -uroot -poldboy123 -e "grant all privileges on wordpress.* to 'wordpress'@'localhost' identified by 'wordpress'"

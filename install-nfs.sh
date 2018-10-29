@@ -1,7 +1,7 @@
 #!/bin/bash
 yum install -y rpcbind nfs-utils
 mkdir -p /data
-chown nobody:nobody /data
+chown nfsnobody:nfsnobody /data
 echo "/data 172.16.1.0/24(rw,sync,all_squash)" > /etc/exports
 cd /tmp/;unzip /tmp/sersync_installdir_64bit.zip
 mkdir /application

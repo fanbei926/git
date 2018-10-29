@@ -1,6 +1,6 @@
 #!/bin/bash
 mkdir -p /application
-#wget https://dev.mysql.com/get/Downloads/MySQL-5.6/mysql-5.6.42-linux-glibc2.12-x86_64.tar.gz
+#cd /tmp/;wget https://dev.mysql.com/get/Downloads/MySQL-5.6/mysql-5.6.42-linux-glibc2.12-x86_64.tar.gz
 tar zxf /tmp/mysql-5.6.42-linux-glibc2.12-x86_64.tar.gz -C /tmp/
 mv /tmp/mysql-5.6.42-linux-glibc2.12-x86_64 /application/mysql-5.6.42
 ln -sf /application/mysql-5.6.42/ /application/mysql
@@ -17,6 +17,6 @@ ln -sf /application/mysql/bin/* /usr/sbin/
 /etc/init.d/mysqld start
 mysqladmin -uroot password 'oldboy123'
 mysql -uroot -poldboy123 -e "create database zrlog;"
-mysql -uroot -poldboy123 -e "grant all privileges on zrlog.* to 'zrlog'@'localhost' identified by 'zrlog'"
+mysql -uroot -poldboy123 -e "grant all privileges on zrlog.* to 'zrlog'@'172.16.1.%' identified by 'zrlog'"
 mysql -uroot -poldboy123 -e "create database wordpress;"
-mysql -uroot -poldboy123 -e "grant all privileges on wordpress.* to 'wordpress'@'localhost' identified by 'wordpress'"
+mysql -uroot -poldboy123 -e "grant all privileges on wordpress.* to 'wordpress'@'172.16.1.%' identified by 'wordpress'"

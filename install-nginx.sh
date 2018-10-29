@@ -1,4 +1,6 @@
 #!/bin/bash
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo
+wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-6.repo
 #安装nginx
 yum install -y pcre-devel openssl-devel
 useradd -M -s /sbin/nologin www
@@ -39,7 +41,7 @@ server {
 EOF
 
 #安装mysql
-#wget https://dev.mysql.com/get/Downloads/MySQL-5.6/mysql-5.6.42-linux-glibc2.12-x86_64.tar.gz
+#cd /tmp/;wget https://dev.mysql.com/get/Downloads/MySQL-5.6/mysql-5.6.42-linux-glibc2.12-x86_64.tar.gz
 tar zxf /tmp/mysql-5.6.42-linux-glibc2.12-x86_64.tar.gz -C /tmp/
 mv /tmp/mysql-5.6.42-linux-glibc2.12-x86_64 /application/mysql-5.6.42
 ln -sf /application/mysql-5.6.42/ /application/mysql
@@ -59,10 +61,10 @@ mysql -uroot -poldboy123 -e "create database wordpress;"
 mysql -uroot -poldboy123 -e "grant all privileges on wordpress.* to 'wordpress'@'localhost' identified by 'wordpress'"
 
 #安装php
-#wget http://jp2.php.net/distributions/php-5.6.38.tar.gz
-#wget http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
+#cd /tmp/;wget http://jp2.php.net/distributions/php-5.6.38.tar.gz
+#cd /tmp/;wget http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
 yum install -y zlib-devel libxml2-devel libjpeg-devel libjpeg-turbo-devel libiconv-devel freetype-devel libpng-devel gd-devel libcurl-devel libxslt-devel libmcrypt-devel mhash mcrypt
-#安装php依赖libiconv
+安装php依赖libiconv
 tar zxf /tmp/libiconv-1.14.tar.gz -C /tmp/
 cd /tmp/libiconv-1.14;./configure --prefix=/usr/local/libiconv && make && make install
 tar zxf /tmp/php-5.6.38.tar.gz -C /tmp/
@@ -80,100 +82,13 @@ cat >/application/nginx/html/blog/index.php<<'EOF'
 EOF
 
 #安装wordpress
-#wget https://wordpress.org/latest.tar.gz
+#cd /tmp/;wget https://wordpress.org/latest.tar.gz
 tar zxf /tmp/wordpress-4.9.8.tar.gz -C /application/nginx/html/blog/
-#配置wordpress的wp-config.php文件
-cat >/application/nginx/html/blog/wordpress/wp-config.php<<'EOF'
-<?php
-/**
- * The base configuration for WordPress
- *
- * The wp-config.php creation script uses this file during the
- * installation. You don't have to use the web site, you can
- * copy this file to "wp-config.php" and fill in the values.
- *
- * This file contains the following configurations:
- *
- * * MySQL settings
- * * Secret keys
- * * Database table prefix
- * * ABSPATH
- *
- * @link https://codex.wordpress.org/Editing_wp-config.php
- *
- * @package WordPress
- */
 
-// ** MySQL settings - You can get this info from your web host ** //
-/** The name of the database for WordPress */
-define('DB_NAME', 'wordpress');
+chown -R www:www /application/nginx/html/blog/wordpress/
 
-/** MySQL database username */
-define('DB_USER', 'wordpress');
-
-/** MySQL database password */
-define('DB_PASSWORD', 'wordpress');
-
-/** MySQL hostname */
-define('DB_HOST', 'localhost');
-
-/** Database Charset to use in creating database tables. */
-define('DB_CHARSET', 'utf8mb4');
-
-/** The Database Collate type. Don't change this if in doubt. */
-define('DB_COLLATE', '');
-
-/**#@+
- * Authentication Unique Keys and Salts.
- *
- * Change these to different unique phrases!
- * You can generate these using the {@link https://api.wordpress.org/secret-key/1.1/salt/ WordPress.org secret-key service}
- * You can change these at any point in time to invalidate all existing cookies. This will force all users to have to log in again.
- *
- * @since 2.6.0
- */
-define('AUTH_KEY',         'IRYO1I4L*d4RN@Xh(0:;s<J$Op1o2rXPh)YKHg=9N%.K|Z7#0L-b7TW2%2wlF|BJ');
-define('SECURE_AUTH_KEY',  'U6x?y?xmM(J|u2t4Whht+#[Xz,8g^N$6w5;U[vu].L&|V@koZSx[U^v,r(|}p1&;');
-define('LOGGED_IN_KEY',    'mLkunfXtwJ0d-8m/Q).DQqTE$dGA ts4h_pin[AE$D9fKYBT}xkdt3Fq!mPHB2*f');
-define('NONCE_KEY',        'sP:3LWNASTWP[,/]Ox$@bpU^K!7M!M<h=2z1;HuPb~hBe> 2zoz`lq^<;B%y5OT=');
-define('AUTH_SALT',        'jm.XH)2G7P4`Y-^#8v[HU(cr9zBPakH2;>!.4SVo2i;~jjov]Pn%.sgZ6fa)h.I`');
-define('SECURE_AUTH_SALT', '>D(=9-rQ{vcS$Vv<MTy-W11A~A-wl0Zh(K|vt(aTfV<;]k*?5$~/x)(<yh7V/brp');
-define('LOGGED_IN_SALT',   'NBuV%#IOZ91l}Kv!ODwRzP9pg!?MBoh|!|Ydmc?s}:}&5C`a_el7oYlp8XJ=A,$h');
-define('NONCE_SALT',       'TW9I*T]P@+1eemIv JR^jwN<M6z4/hlu1?EoJWx8?4${wKX^! }LI*r-<xtYrV|I');
-
-/**#@-*/
-
-/**
- * WordPress Database Table prefix.
- *
- * You can have multiple installations in one database if you give each
- * a unique prefix. Only numbers, letters, and underscores please!
- */
-$table_prefix  = 'wp_';
-
-/**
- * For developers: WordPress debugging mode.
- *
- * Change this to true to enable the display of notices during development.
- * It is strongly recommended that plugin and theme developers use WP_DEBUG
- * in their development environments.
- *
- * For information on other constants that can be used for debugging,
- * visit the Codex.
- *
- * @link https://codex.wordpress.org/Debugging_in_WordPress
- */
-define('WP_DEBUG', false);
-
-/* That's all, stop editing! Happy blogging. */
-
-/** Absolute path to the WordPress directory. */
-if ( !defined('ABSPATH') )
-	define('ABSPATH', dirname(__FILE__) . '/');
-
-/** Sets up WordPress vars and included files. */
-require_once(ABSPATH . 'wp-settings.php');
-EOF
-
+yum install -y rpcbind nfs-utils
+mkdir -p /application/nginx/html/blog/wordpress/wp-content/uploads
+mount -t nfs 172.16.1.99:/data /application/nginx/html/blog/wordpress/wp-content/uploads/
 #启动nginx
 nginx

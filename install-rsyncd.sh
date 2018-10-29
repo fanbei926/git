@@ -1,22 +1,22 @@
 #!/bin/bash
 echo '------------------Auto Config Start------------------'
-echo '------------------Change Hostname'
-#更改hostname
-if [ ! $1 ] || [ ! $2 ]
-then
-	echo '-----------------------Use default items'
-	name='default'
-	ip='100'
-else
-	echo "-----------------------Hostname:$1 IP:$2"
-	name=$1
-	ip=$2
-fi
-hostname $name
-sed -i "s#localhost.localdomain#$name#g" /etc/sysconfig/network
-echo '------------------Change IP'
-#更改系统IP
-sed -i "s#200#$ip#g" /etc/sysconfig/network-scripts/ifcfg-{eth0,eth1}
+# echo '------------------Change Hostname'
+# #更改hostname
+# if [ ! $1 ] || [ ! $2 ]
+# then
+# 	echo '-----------------------Use default items'
+# 	name='default'
+# 	ip='100'
+# else
+# 	echo "-----------------------Hostname:$1 IP:$2"
+# 	name=$1
+# 	ip=$2
+# fi
+# hostname $name
+# sed -i "s#localhost.localdomain#$name#g" /etc/sysconfig/network
+# echo '------------------Change IP'
+# #更改系统IP
+# sed -i "s#200#$ip#g" /etc/sysconfig/network-scripts/ifcfg-{eth0,eth1}
 echo '------------------Create Rsync User'
 #创建用户
 user=`cat /etc/passwd | grep rsync | wc -l`

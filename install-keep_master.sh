@@ -97,3 +97,7 @@ then
 /etc/init.d/keepalived stop
 fi
 EOF
+echo 'net.ipv4.ip_nolocal_bind=1' >> /etc/sysctl.conf
+sysctl -p
+nginx
+/etc/init.d/keepalived start

@@ -1,6 +1,6 @@
 #!/bin/bash
 function nginx_install () {
-    yum install -y pcre-devel openssl-devel &> /dev/null                #安装nginx依赖
+    yum install -y pcre-devel openssl-devel  gcc-c++ &> /dev/null                #安装nginx依赖
     #判断用户是否存在
     [ `cat /etc/passwd | grep "$user1" | wc -l` -gt 0 ] && {
         echo "User $user1 has create."
@@ -77,6 +77,7 @@ EOF
 
 function mysql_install () {
     #安装mysql
+	yum install -y libaio-devel &> /dev/null
      [ ! -f /tmp/${mysql_ver}-linux-glibc2.12-x86_64.tar.gz ] && {
          cd /tmp/ && wget https://dev.mysql.com/get/Downloads/MySQL-5.6/${mysql_ver}-linux-glibc2.12-x86_64.tar.gz &> /dev/null
          echo "${mysql_ver}-linux-glibc2.12-x86_64.tar.gz file dose not exit."
@@ -113,8 +114,8 @@ function mysql_install () {
      user = root
      password = $mysql_passwd
 EOF
-     mysql -e "create database $db_name;"
-     mysql -e "grant all privileges on ${db_name}.* to $db_user@'localhost' identified by ${db_passwd}"
+     mysql -e "create database ${db_name};"
+     mysql -e "grant all privileges on ${db_name}.* to $db_user@'localhost' identified by '${db_passwd}'"
 }
 
 function php_install () {

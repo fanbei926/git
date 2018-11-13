@@ -114,7 +114,7 @@ function mysql_install () {
      password = $mysql_passwd
 EOF
      mysql -e "create database $db_name;"
-     mysql -e "grant all privileges on $db_name.* to $db_user@'localhost' identified by $db_passwd"
+     mysql -e "grant all privileges on ${db_name}.* to $db_user@'localhost' identified by ${db_passwd}"
 }
 
 function php_install () {

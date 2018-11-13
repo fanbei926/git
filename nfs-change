@@ -1,0 +1,20 @@
+http://blog.51cto.com/forall/1882965
+
+#!/bin/bash
+
+port=`netstat -anp|grep 2049`
+if [ "$port" == "" ];then
+/sbin/service keepalived stop
+fi
+
+#!/bin/bash
+ip=`/sbin/ip a|grep "eth2"|grep "222"`
+web="10.0.0.102"
+if [ "$ip" != "" ]
+then
+        /usr/bin/ssh $web "cat /mnt/yy"
+        if [ "$?" != 0 ]
+        then
+                /usr/bin/ssh $web "umount /mnt && mount -t nfs 10.0.0.222:/data /mnt"
+        fi
+fi

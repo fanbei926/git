@@ -1,0 +1,48 @@
+自动备份（rsync）
+	文件备份
+		源
+		src_path
+		目的地
+		des_path
+		备份几天
+		day
+		打包
+
+
+
+	数据库备份
+		mysqldump
+		库备份
+		-B
+		表备份
+
+	远程备份服务器
+	ip
+
+
+	生成md5
+
+date=`date +%F_%H:%M`
+src_file="application/nginx/logs var/spool/cron/root"
+src_ip=`ifconfig | awk -F"[ :]+" 'NR==2{print $4}'`
+back_path=/test
+file_name=${date}-${src_ip}
+
+des_path="backup"
+des_ip=172.27.0.1
+rsy_user="rsyncd_backup"
+rsy_pass_file="/etc/rsync.passwd"
+
+
+cd /;tar zcf  ${back_path}/${file_name}.tar.gz $src_file;cd ${back_path};md5sum ${file_name}.tar.gz > ${back_path}/${file_name}.log
+
+
+find ${back_path} -type f -mtime +7 -exec rm -fr {} \;
+rsync -az ${back_path} ${rsy_user}@${des_ip}::${des_path} --password-file=${rsy_pass_file}
+
+
+
+服务器端
+
+
+md5sum 文件名 | grep md5文件

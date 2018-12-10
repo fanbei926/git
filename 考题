@@ -1,0 +1,315 @@
+
+监控URL
+curl 、wget
+function Check_url () {
+	while true
+	do
+		read -t 30 -p "Please input URL" url
+		if [ ! $url ]
+		then
+			echo "You input nothing.Please retry."
+			continue
+		fi
+		httpcode=`curl --connect-timeout 10 -m 20 -o /dev/null -s -w %{http_code} $url`
+		if [ $httpcode -ge 200 ] && [ $httpcode -lt 300 ]
+		then
+			echo "$url is OK."
+		else
+			echo "Bad url:$url."
+		fi
+		read -t 30 -p "ENTER PRESS "c" TO CONTINUE..." retry
+		if [ ! $retry ]
+		then
+			echo "You input nothing,BYE!"
+			exit 1
+		elif [ $retry -eq "c" ]
+		then
+			echo "CONTINUE...NOW!"
+			continue
+		else
+			echo "You input error,BYE!"
+			exit 1
+		fi
+	done
+}
+监控接口？
+系统资源监控
+	memory io cpu HD NIC
+	memory
+		free -h
+function Check_mem () {
+	memTotal=`free | awk 'NR==2{print $2}'`
+	memUsed=`free | awk 'NR==3{print $3}'`
+	memFree=`free | awk 'NR==3{print $4}'`
+	memUsedPre=`awk "BEGIN{print $memUsed/$memTotal*100}`
+	swapTotal=`free | awk 'NR==4{print $2}'`
+	swapUsed=`free | awk 'NR==4{print $3}'`
+	swapFree=`free | awk 'NR==4{print $4}'`
+
+	echo "--------Memory Info--------"
+	echo -e "Total Memory:\t$memTotal"
+	echo -e "\tUsed Memory:\t$memUsed"
+	echo -e "\tFree Memory:\t$memFree"
+	echo "--------Swap Info--------"
+	echo -e "Total Swap:\t$swapTotal"
+	echo -e "\tUsed Swap:\t$swapUsed"
+	echo -e "\tFree Swap:\t$swapFree"
+
+	if [ $memUsedPre -gt 80 ]
+	then
+		echo "Warning: memory aviable is too low..."
+		echo -n "Now is "
+		printf '%0.2f\n' $memUsedPre
+	fi
+	read -t 30 -p "ENTER PRESS "r" TO RETURN..." return
+	if [ ! $return ]
+	then
+		echo "You input nothing,BYE!"
+		exit 1
+	elif [ $retry -eq "r" ]
+	then
+		#返回主程序
+	else
+		echo "You input error,BYE!"
+		exit 1
+	fi
+}
+
+	io
+		iostat
+function Check_io () {
+	for disk in `iostat -x 1 1 | grep -o sd[a-z]`
+	do
+		echo "--------Disk $disk Info--------"
+		for i in `iostat -x 1 1 | grep $disk`
+		do
+			echo -n "每秒进行merge的读操作数目: "
+			echo `echo $i | awk '{print $2}'`
+			echo -n "每秒进行merge的写操作数目: "
+			echo `echo $i | awk '{print $3}'`
+			echo -n "每秒完成的读I/O设备次数: "
+			echo `echo $i | awk '{print $4}'`
+			echo -n "每秒完成的写I/O设备次数: "
+			echo `echo $i | awk '{print $5}'`
+			echo -n "每秒读K字节数: "
+			echo `echo $i | awk '{print $6}'`
+			echo -n "每秒写K字节数: "
+			echo `echo $i | awk '{print $7}'`
+			echo -n "平均每次设备进行I/O操作的数据大小: "
+			echo `echo $i | awk '{print $8}'`
+			echo -n "平均I/O队列长度: "
+			echo `echo $i | awk '{print $9}'`
+			echo -n "平均每次I/O操作等待时间: "
+			echo `echo $i | awk '{print $13}'`
+			echo -n "I/O消耗的CPU百分比: "
+			echo `echo $i | awk '{print $14}'`
+		done
+	done
+	read -t 30 -p "ENTER PRESS "r" TO RETURN..." return
+	if [ ! $return ]
+	then
+		echo "You input nothing,BYE!"
+		exit 1
+	elif [ $retry -eq "r" ]
+	then
+		#返回主程序
+	else
+		echo "You input error,BYE!"
+		exit 1
+	fi
+}
+	cpu
+		top
+function Check_cpu () {
+	info=`top -n 1 | sed -n '3p'`
+	
+	echo "--------CPU Info--------"
+	echo -n "用户空间占用CPU百分比: "
+	echo `echo $info | awk -F"[ %]+" '{print $2}'`
+	echo -n "内核空间占用CPU百分比: "
+	echo `echo $info | awk -F"[ %]+" '{print $4}'`
+	echo -n "用户进程空间内改变过优先级的进程占用CPU百分比: "
+	echo `echo $info | awk -F"[ %]+" '{print $6}'`
+	echo -n "空闲CPU百分比: "
+	echo `echo $info | awk -F"[ %]+" '{print $8}'`
+	echo -n "等待I/O的CPU时间百分比: "
+	echo `echo $info | awk -F"[ %]+" '{print $10}'`
+	echo -n "硬件CPU中断占用百分比: "
+	echo `echo $info | awk -F"[ %]+" '{print $12}'`
+	echo -n "软中断占用CPU百分比: "
+	echo `echo $info | awk -F"[ %]+" '{print $14}'`
+	echo -n "虚拟机占用CPU百分比: "
+	echo `echo $info | awk -F"[ %]+" '{print $16}'`
+
+	read -t 30 -p "ENTER PRESS "r" TO RETURN..." return
+	if [ ! $return ]
+	then
+		echo "You input nothing,BYE!"
+		exit 1
+	elif [ $retry -eq "r" ]
+	then
+		#返回主程序
+	else
+		echo "You input error,BYE!"
+		exit 1
+	fi
+}
+	HD
+		df -h
+function Check_diskspace () {
+	for disk in `df | grep -o "sd[a-z]."`
+	do
+		echo "--------Disk $disk Space Info--------"
+		for i in `df | grep $disk`
+		do
+			echo -n "分区总大小: "
+			echo `echo $i | awk '{print $2}'`
+			echo -n "已使用大小: "
+			echo `echo $i | awk '{print $3}'`
+			echo -n "可使用大小: "
+			echo `echo $i | awk '{print $4}'`
+			echo -n "使用空间百分比: "
+			echo `echo $i | awk '{print $5}'`
+			echo -n "挂载点: "
+			echo `echo $i | awk '{print $6}'`
+		done
+	done
+	read -t 30 -p "ENTER PRESS "r" TO RETURN..." return
+	if [ ! $return ]
+	then
+		echo "You input nothing,BYE!"
+		exit 1
+	elif [ $retry -eq "r" ]
+	then
+		#返回主程序
+	else
+		echo "You input error,BYE!"
+		exit 1
+	fi
+}
+	NIC
+		/proc/net/dev
+function Check_net () {
+	for interface in `ifconfig | egrep -o '^[a-z0-9]+'| grep -v "lo" | uniq`
+	do
+		echo "--------Interface $interface Info--------"
+		for i in `cat /proc/net/dev | grep $interface`
+		do
+			re_old=`echo $i | awk '{print $2}'`
+			tr_old=`echo $i | awk '{print $10}'`
+			sleep 10
+			re_new=`echo $i | awk '{print $2}'`
+			tr_new=`echo $i | awk '{print $10}'`
+			
+			re_speed=`awk "BEGIN{print ($re_new-$re_old)/10}"`
+			tr_speed=`awk "BEGIN{print ($re_new-$re_old)/10}"`
+
+			echo "接收速度（kb/s）: $re_speed"
+			echo "发送速度（kb/s）: $tr_speed"
+		done
+	done
+	read -t 30 -p "ENTER PRESS "r" TO RETURN..." return
+	if [ ! $return ]
+	then
+		echo "You input nothing,BYE!"
+		exit 1
+	elif [ $retry -eq "r" ]
+	then
+		#返回主程序
+	else
+		echo "You input error,BYE!"
+		exit 1
+	fi
+}
+
+服务内容监控
+	nginx连接数
+	curl http://127.0.0.1:82/status
+function Check_nginx () {
+	curl -s http://127.0.0.1:81/status | while read line
+	do
+		awk -F':' '{print $1":"$2}'
+	done
+}
+	
+	tcp_半连接数
+function Check_tcp () {
+	ss -an | sed -n '2,$ p' | awk -F"[ :]+" '{STATE[$1]++} END{for(a in STATE) print STATE[a],a}'
+}
+	netstat -an | awk -F"[ :]+" '/SYN_RECV/ {STATE[$(NF-3)]++} END{for(a in STATE) print STATE[a],a}'
+
+	mysql性能监控
+function Check_mysql () {
+	mysql_con="mysqladmin -uroot -poldboy123 -h 127.0.0.1 -P 3306"
+
+	uptime=`${mysql_conn} status 2>/dev/null | awk -F"[ :]+" '{print $2}'`
+	echo "Uptime: $uptime"
+
+	questions=`${mysql_conn} status 2>/dev/null | awk -F"[ :]+" '{print $6}'`
+	echo "Questions: $questions"
+
+	slow_queries=`${mysql_conn} status 2>/dev/null | awk -F"[ :]+" '{print $9}'`
+	echo "Slow_queries: $slow_queries"
+
+	com_select=`${mysql_conn} extended-status 2>/dev/null | awk -F"[ |]+" '/Com_select[ ]/{print $3}'`
+	echo "Com_select: $com_select"
+
+	com_update=`${mysql_conn} extended-status 2>/dev/null | awk -F"[ |]+" '/Com_update[ ]/{print $3}'`
+	echo "Com_update: $com_update"
+
+	com_insert=`${mysql_conn} extended-status 2>/dev/null | awk -F"[ |]+" '/Com_insert[ ]/{print $3}'`
+	echo "Com_insert: $com_insert"
+
+	com_delete=`${mysql_conn} extended-status 2>/dev/null | awk -F"[ |]+" '/Com_delete[ ]/{print $3}'`
+	echo "Com_delete: $com_delete"
+
+	com_commit=`${mysql_conn} extended-status 2>/dev/null | awk -F"[ |]+" '/Com_commit[ ]/{print $3}'`
+	echo "Com_commit: $com_commit"
+
+	com_begin=`${mysql_conn} extended-status 2>/dev/null | awk -F"[ |]+" '/Com_begin[ ]/{print $3}'`
+	echo "Com_begin: $com_begin"
+
+	bytes_sent=`${mysql_conn} extended-status 2>/dev/null | awk -F"[ |]+" '/Bytes_sent[ ]/{print $3}'`
+	echo "Bytes_sent: $bytes_sent"
+
+	bytes_received=`${mysql_conn} extended-status 2>/dev/null | awk -F"[ |]+" '/Bytes_received[ ]/{print $3}'`
+	echo "Bytes_received: $bytes_received"
+
+}
+
+	php性能监控
+curl http://127.0.0.1:81/status 
+curl -s http://127.0.0.1:81/status | while read line
+do
+	awk -F':' '{print $1":"$2}'
+done
+
+输入进程名称
+	有
+		打印进程个数、用户、端口
+	没有
+		报错
+
+read -t 30 -p "Please input service name: " name
+result=`ps -ef | egrep "\b$name\b" | grep -v "grep" | wc -l`
+if [ $result -eq 0 ]
+then
+	echo "Can not find this service,please retry."
+	continue
+else	
+	user=`ps -ef | egrep "\b$name\b" | grep -v "grep" | awk 'NR==1{print $1}'`
+	echo "This service has $result processes."
+	echo -n "Pid: "
+	for pid in `ps -ef | egrep "\b$name\b" | grep -v "grep" | awk '{print $2}'`
+	do
+		echo -n "$pid " 
+	done
+	echo
+	echo "User: $user"
+	echo -n "Port: "
+	for port in `ss -antup4 | grep $name | awk -F"[ :]+" '{print $6}'`
+	do
+		echo -n "$port " 
+	done
+	echo
+fi

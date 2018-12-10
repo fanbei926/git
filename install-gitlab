@@ -1,7 +1,7 @@
 #!/bin/bash
 yum install -y curl policycoreutils-python openssh-server
 rpm -ivh https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7/gitlab-ce-10.2.2-ce.0.el7.x86_64.rpm
-sed -i "s#external_url 'http://gitlab.example.com'#external_url 'http://10.0.0.104'#g" /etc/gitlab/gitlab.rb
+sed -i "s#external_url 'http://gitlab.example.com'#external_url 'http://10.0.0.108'#g" /etc/gitlab/gitlab.rb
 echo "gitlab_rails['backup_path'] = '/data/backup/gitlab'" >> /etc/gitlab/gitlab.rb
 echo "gitlab_rails['backup_keep_time'] = 604800" >> /etc/gitlab/gitlab.rb
 gitlab-ctl reconfigure
